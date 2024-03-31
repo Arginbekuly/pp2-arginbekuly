@@ -112,6 +112,20 @@ def start_the_game():
             speed = total // 3 + 1
             snake_blocks.append(apple)
             apple = get_random_empty_block()
+        
+        draw_block(SKY_BLUE, two_apple.x, two_apple.y)
+        for block in snake_blocks:
+            draw_block(SNAKE, block.x, block.y)
+        if two_apple == head:
+            total += 2   
+            snake_blocks.append(two_apple)
+            two_apple = get_random_empty_block()
+            two_apple_timer = pygame.time.get_ticks()  # Reset the timer
+
+        # Check if the timer for two_apple has expired (6 seconds)
+        if pygame.time.get_ticks() - two_apple_timer >= 6000:
+            two_apple = get_random_empty_block()
+            two_apple_timer = pygame.time.get_ticks()  # Reset the timer
 
     
         new_head = Block(head.x + d_row, head.y + d_col)
