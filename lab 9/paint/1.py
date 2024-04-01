@@ -1,63 +1,90 @@
 import pygame
-import sys
-
-# Initialize pygame
+import os
 pygame.init()
 
-# Set up screen
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Drawing Program")
 
-# Define colors
-BLACK = (0, 0, 0)
+screen = pygame.display.set_mode((1080, 900))
+
+clock = pygame.time.Clock()
+
+RED = (230, 0, 0)
+GREEN = (0, 230, 0)
+BLUE = (0, 0, 230)
 WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+colors = [RED, GREEN, BLUE]
+color = WHITE
 
-# Define shapes
-RECTANGLE = 'rectangle'
-CIRCLE = 'circle'
-ERASER = 'eraser'
+eraser = pygame.image.load('images\\eraser.png')
+eraser = pygame.transform.scale(eraser, (100,100))
 
-# Default shape and color
-current_shape = RECTANGLE
-current_color = BLACK
+def draw_rect(index):
+    pygame.draw.rect(screen, colors[index], (index*40, 0, 40, 40))
 
-# Main loop
-running = True
+def pick_color():
+    click = pygame.mouse.get_pressed()
+    x, y = pygame.mouse.get_pos()
+    if click[0]:
+        if 0<=x<=40 and 0<=y<=40:
+            return RED
+        elif 40<x<=80 and 0<=y<=40:
+            return GREEN
+        elif 80<x<=120 and 0<=y<=40:
+            return BLUE
+        elif 1010<=x<=1080 and 0<=y<=40:
+            return BLACK
+    return color
+
+def painting(color):
+    click = pygame.mouse.get_pressed()
+    x, y = pygame.mouse.get_pos()
+    if click[0] and not (0<=x<=400 and 0<=y<=90):
+        if mode == 'circle':
+            pygame.draw.circle(screen, color, (x, y), 27)
+        if mode == 'rect':
+            pygame.draw.rect(screen, color, (x, y, 40, 40), 4)
+        if mode == 'right_triangle':
+            pygame.draw.polygon(screen, color, ((x, y), (x, y+40), (x+40, y+40)), 3)
+        if mode == 'equal_triangle':
+            pygame.draw.polygon(screen, color, ((x,y), (x+20, y-40), (x+40, y)))
+        if mode == 'rhomb':
+            pygame.draw.polygon(screen, color, ((x, y), (x+20, y-20), (x+40, y), (x+20, y+20)))
+
+mode = 'circle'
+running=True
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_r:
-                current_shape = RECTANGLE
-            elif event.key == pygame.K_c:
-                current_shape = CIRCLE
-            elif event.key == pygame.K_e:
-                current_shape = ERASER
-            elif event.key == pygame.K_b:
-                current_color = BLACK
-            elif event.key == pygame.K_w:
-                current_color = WHITE
-            elif event.key == pygame.K_r:
-                current_color = RED
-            elif event.key == pygame.K_g:
-                current_color = GREEN
-            elif event.key == pygame.K_b:
-                current_color = BLUE
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if current_shape == RECTANGLE:
-                pygame.draw.rect(screen, current_color, (event.pos[0], event.pos[1], 50, 50))
-            elif current_shape == CIRCLE:
-                pygame.draw.circle(screen, current_color, event.pos, 25)
-            elif current_shape == ERASER:
-                pygame.draw.circle(screen, WHITE, event.pos, 25)
-        
-    pygame.display.flip()
 
-# Quit pygame
-pygame.quit()
-sys.exit()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT: 
+            pygame.quit()
+    
+    for i in range(len(colors)):
+        draw_rect(i)
+
+    screen.blit(eraser, (1010, 0))
+    rect = pygame.draw.rect(screen, WHITE, (130, 0, 40, 40), 3)
+    circle = pygame.draw.circle(screen, WHITE, (197, 20), 23, 3)
+    right = pygame.draw.polygon(screen, WHITE, ((230, 0), (230, 40), (270, 40)), 3)
+    equal = pygame.draw.polygon(screen, WHITE, ((280, 40), (300, 0), (320, 40)), 3)
+    rhomb = pygame.draw.polygon(screen, WHITE, ((330, 20), (350,0), (370, 20), (350, 40)), 3)
+
+    pos = pygame.mouse.get_pos()
+    print(mode)
+    if rect.collidepoint(pos):
+        mode = "rect"
+    if circle.collidepoint(pos):
+        mode = "circle"
+    if right.collidepoint(pos):
+        mode = 'right_triangle'
+    if equal.collidepoint(pos):
+        mode = 'equal_triangle'
+    if rhomb.collidepoint(pos):
+        mode = 'rhomb'
+
+
+    color = pick_color()
+    painting(color)
+
+
+    clock.tick(370)
+    pygame.display.update()
