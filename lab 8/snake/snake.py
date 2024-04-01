@@ -7,7 +7,7 @@ pygame.init()
 
 background = pygame.image.load('images//snake.png')
 
-SIZE_BLOCK = 20
+SIZE_BLOCK = 35
 WHITE = (255, 255, 255)
 FRAME_COLOR = (0, 255, 204)
 HEADER_COLOR = (0, 204, 153)
